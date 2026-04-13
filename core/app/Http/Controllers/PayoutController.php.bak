@@ -1,0 +1,263 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Payout;
+use App\Models\PaymentSplit;
+use App\Services\PayoutService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+
+class PayoutController extends Controller
+{
+    protected $payoutService;
+
+    public function __construct(PayoutService $payoutService)
+    {
+        $this->middleware('auth:user');
+        $this->payoutService = $payoutService;
+    }
+
+    public function index(Request $request)
+    {
+        $user = Auth::guard('user')->user();
+
+        $query = Payout::forUser($user->id)->with('user');
+
+        // Filtros
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->payout_method) {
+            $query->byMethod($request->payout_method);
+        }
+
+        if ($request->date_from) {
+            $query->where('scheduled_date', '>=', $request->date_from);
+        }
+
+        if ($request->date_to) {
+            $query->where('scheduled_date', '<=', $request->date_to);
+        }
+
+        $payouts = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        $summary = [
+            'total_scheduled' => Payout::forUser($user->id)->scheduled()->sum('net_amount'),
+            'total_processing' => Payout::forUser($user->id)->processing()->sum('net_amount'),
+            'total_completed' => Payout::forUser($user->id)->completed()->sum('net_amount'),
+            'total_failed' => Payout::forUser($user->id)->failed()->sum('net_amount'),
+        ];
+
+        return view('user.payouts.index', compact('payouts', 'summary'));
+    }
+
+    public function show($id)
+    {
+        $user = Auth::guard('user')->user();
+        $payout = Payout::forUser($user->id)->findOrFail($id);
+
+        return view('user.payouts.show', compact('payout'));
+    }
+
+    public function create()
+    {
+        $user = Auth::guard('user')->user();
+
+        // Verificar saldo disponível para saque
+        $availableBalance = $this->payoutService->getAvailableBalance($user->id);
+        $minimumPayout = $this->payoutService->getMinimumPayoutAmount();
+
+        $userBankData = $user->getBankData(); // Método a ser implementado no User model
+
+        return view('user.payouts.create', compact('availableBalance', 'minimumPayout', 'userBankData'));
+    }
+
+    public function store(Request $request)
+    {
+        $user = Auth::guard('user')->user();
+
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:10',
+            'payout_method' => 'required|in:pix,bank_transfer',
+            'scheduled_date' => 'required|date|after_or_equal:today',
+            'recipient_data' => 'required|array',
+            'description' => 'nullable|string|max:255'
+        ]);
+
+        // Validações específicas por método
+        if ($request->payout_method === 'pix') {
+            $validator->addRules([
+                'recipient_data.pix_key' => 'required|string|max:255',
+                'recipient_data.pix_key_type' => 'required|in:cpf,cnpj,email,phone,random'
+            ]);
+        } elseif ($request->payout_method === 'bank_transfer') {
+            $validator->addRules([
+                'recipient_data.bank_code' => 'required|string|size:3',
+                'recipient_data.agency' => 'required|string|max:10',
+                'recipient_data.account_number' => 'required|string|max:20',
+                'recipient_data.account_type' => 'required|in:checking,savings',
+                'recipient_data.account_holder_name' => 'required|string|max:255',
+                'recipient_data.account_holder_document' => 'required|string|max:14'
+            ]);
+        }
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            // Verificar saldo disponível
+            $availableBalance = $this->payoutService->getAvailableBalance($user->id);
+
+            if ($request->amount > $availableBalance) {
+                return back()->with('error', 'Saldo insuficiente para este saque.');
+            }
+
+            // Calcular taxa
+            $feeAmount = $this->payoutService->calculatePayoutFee($request->amount, $request->payout_method);
+            $netAmount = $request->amount - $feeAmount;
+
+            // Criar payout
+            $payout = new Payout();
+            $payout->user_id = $user->id;
+            $payout->amount = $request->amount;
+            $payout->fee_amount = $feeAmount;
+            $payout->net_amount = $netAmount;
+            $payout->payout_method = $request->payout_method;
+            $payout->recipient_data = $request->recipient_data;
+            $payout->status = 'scheduled';
+            $payout->scheduled_date = $request->scheduled_date;
+            $payout->description = $request->description ?? 'Saque solicitado pelo usuário';
+            $payout->automatic = false;
+
+            $payout->save();
+
+            // Reservar saldo
+            $this->payoutService->reserveBalance($user->id, $request->amount);
+
+            return redirect()->route('user.payouts.show', $payout->id)
+                ->with('success', 'Saque solicitado com sucesso!');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro ao processar saque: ' . $e->getMessage());
+        }
+    }
+
+    public function cancel($id)
+    {
+        $user = Auth::guard('user')->user();
+        $payout = Payout::forUser($user->id)->findOrFail($id);
+
+        if (!$payout->canBeCancelled()) {
+            return back()->with('error', 'Este saque não pode ser cancelado.');
+        }
+
+        try {
+            $payout->cancel();
+
+            // Liberar saldo reservado
+            $this->payoutService->releaseReservedBalance($user->id, $payout->amount);
+
+            return back()->with('success', 'Saque cancelado com sucesso!');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro ao cancelar saque: ' . $e->getMessage());
+        }
+    }
+
+    public function retry($id)
+    {
+        $user = Auth::guard('user')->user();
+        $payout = Payout::forUser($user->id)->findOrFail($id);
+
+        if (!$payout->canBeRetried()) {
+            return back()->with('error', 'Este saque não pode ser reprocessado.');
+        }
+
+        try {
+            $payout->retry();
+
+            return back()->with('success', 'Saque reagendado para reprocessamento!');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro ao reagendar saque: ' . $e->getMessage());
+        }
+    }
+
+    public function getAvailableBalance()
+    {
+        $user = Auth::guard('user')->user();
+        $balance = $this->payoutService->getAvailableBalance($user->id);
+
+        return response()->json([
+            'available_balance' => $balance,
+            'formatted_balance' => 'R$ ' . number_format($balance, 2, ',', '.')
+        ]);
+    }
+
+    public function calculateFee(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:0.01',
+            'method' => 'required|in:pix,bank_transfer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $feeAmount = $this->payoutService->calculatePayoutFee($request->amount, $request->method);
+        $netAmount = $request->amount - $feeAmount;
+
+        return response()->json([
+            'gross_amount' => $request->amount,
+            'fee_amount' => $feeAmount,
+            'net_amount' => $netAmount,
+            'formatted_fee' => 'R$ ' . number_format($feeAmount, 2, ',', '.'),
+            'formatted_net' => 'R$ ' . number_format($netAmount, 2, ',', '.')
+        ]);
+    }
+
+    public function history(Request $request)
+    {
+        $user = Auth::guard('user')->user();
+
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : Carbon::now()->subMonths(3);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : Carbon::now();
+
+        $payouts = Payout::forUser($user->id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $summary = [
+            'total_amount' => $payouts->sum('amount'),
+            'total_fees' => $payouts->sum('fee_amount'),
+            'total_net' => $payouts->sum('net_amount'),
+            'completed_count' => $payouts->where('status', 'completed')->count(),
+            'failed_count' => $payouts->where('status', 'failed')->count(),
+        ];
+
+        return view('user.payouts.history', compact('payouts', 'summary', 'startDate', 'endDate'));
+    }
+
+    public function export(Request $request)
+    {
+        $user = Auth::guard('user')->user();
+
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : Carbon::now()->subMonths(3);
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : Carbon::now();
+
+        $payouts = Payout::forUser($user->id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Implementar exportação (CSV, PDF, etc.)
+        return response()->json(['message' => 'Export functionality to be implemented']);
+    }
+}

@@ -1,0 +1,17 @@
+ ============================================================================ 
+ Request 
+ ============================================================================ 
+
+curl --location 'https://apiv2.payments.fitbank.com.br/main/execute/GenerateDynamicPixQRCodeDueDate'  --header 'Accept: application/json'  --header 'Content-Type: application/json'  --data '{"Method":"GenerateDynamicPixQRCodeDueDate","PartnerId":"1447","BusinessUnitId":"1517","PixKey":"363f62fe-0201-4eac-a4c8-4c4dc6af60eb","TaxNumber":"49775544000114","PayerTaxNumber":"02879935318","PayerName":"thiago sampaio","PrincipalValue":"1.03","DueDate":"2025-07-30","ExpirationDate":"2025-07-30","Address":{"AddressLine":"Rua Julio Conceicao, 92","AddressLine2":"","ZipCode":"01126-000","Neighborhood":"Bom Retiro","CityName":"Sao Paulo","State":"Sao Paulo","AddressType":1,"Country":"Brasil","Complement":"","Reference":""},"ChangeType":0,"Bank":"450","BankBranch":"0001","BankAccount":"4810913608","BankAccountDigit":"1"}'
+
+ ============================================================================ 
+ Response 
+ ============================================================================ 
+
+{"Success":"false","Message":"ISE0030- O IP 209.145.58.38 não está autorizado a efetuar requisições","Validation":[]}
+
+ ============================================================================ 
+ Response Headers 
+ ============================================================================ 
+
+{"url":"https:\/\/apiv2.payments.fitbank.com.br\/main\/execute\/GenerateDynamicPixQRCodeDueDate","content_type":"application\/json; charset=utf-8","http_code":200,"header_size":475,"request_size":966,"filetime":-1,"ssl_verify_result":0,"redirect_count":0,"total_time":0.689056,"namelookup_time":0.028874,"connect_time":0.043406,"pretransfer_time":0.08405,"size_upload":628,"size_download":121,"speed_download":175,"speed_upload":911,"download_content_length":121,"upload_content_length":628,"starttransfer_time":0.68901,"redirect_time":0,"redirect_url":"","primary_ip":"18.160.102.39","certinfo":[],"primary_port":443,"local_ip":"209.145.58.38","local_port":49298,"http_version":2,"protocol":2,"ssl_verifyresult":0,"scheme":"HTTPS","appconnect_time_us":83932,"connect_time_us":43406,"namelookup_time_us":28874,"pretransfer_time_us":84050,"redirect_time_us":0,"starttransfer_time_us":689010,"total_time_us":689056}

@@ -1,0 +1,278 @@
+/* Fixed Sidebar Styles */
+
+/* Remove collapse/expand functionality */
+.sidenav {
+  transform: translateX(0) !important;
+  width: 250px !important;
+  min-width: 250px !important;
+  max-width: 250px !important;
+  position: fixed !important;
+  left: 0 !important;
+  z-index: 1050;
+}
+
+/* Remove all hover effects on sidebar container */
+.sidenav:hover {
+  width: 250px !important;
+  transform: translateX(0) !important;
+}
+
+/* Disable sidenav hover expansion */
+body:not(.g-sidenav-pinned) .sidenav:hover {
+  width: 250px !important;
+  max-width: 250px !important;
+  transform: translateX(0) !important;
+}
+
+body:not(.g-sidenav-pinned) .sidenav:hover .sidenav-toggler {
+  display: none !important;
+}
+
+body:not(.g-sidenav-pinned) .sidenav .navbar-collapse {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+body:not(.g-sidenav-pinned) .sidenav .nav-link-text {
+  display: inline !important;
+  opacity: 1 !important;
+}
+
+body.g-sidenav-hidden .sidenav {
+  width: 250px !important;
+  transform: translateX(0) !important;
+}
+
+/* Always show sidebar */
+.sidenav-toggler,
+.sidenav-toggler-inner,
+.sidenav-toggler-line {
+  display: none !important;
+}
+
+/* Main content adjustment */
+.main-content {
+  margin-left: 250px !important;
+  width: calc(100% - 250px) !important;
+}
+
+/* Header spacing fix */
+.main-content .header {
+  background: transparent !important;
+  padding-top: 1.5rem !important;
+  padding-bottom: 6rem !important;
+}
+
+.main-content .header.pb-6 {
+  padding-bottom: 6rem !important;
+}
+
+
+/* Remove sidebar animation and all transitions */
+.sidenav,
+.sidenav *,
+.main-content {
+  transition: none !important;
+}
+
+/* Override Argon default hover behaviors */
+body.g-sidenav-show .sidenav,
+body.g-sidenav-hide .sidenav,
+body:not(.g-sidenav-show) .sidenav:hover,
+body:not(.g-sidenav-hide) .sidenav:hover,
+body:not(.g-sidenav-pinned) .sidenav:hover {
+  width: 250px !important;
+  min-width: 250px !important;
+  max-width: 250px !important;
+  transform: translateX(0) !important;
+  box-shadow: none !important;
+}
+
+/* Force show all navigation text always */
+.sidenav .nav-link-text,
+.sidenav:hover .nav-link-text,
+body:not(.g-sidenav-pinned) .sidenav:hover .nav-link-text {
+  opacity: 1 !important;
+  display: inline !important;
+}
+
+/* Disable icon centering on hover */
+.sidenav .nav-link > i,
+.sidenav:hover .nav-link > i,
+body:not(.g-sidenav-pinned) .sidenav:hover .nav-link > i {
+  transform: none !important;
+  margin-left: 0 !important;
+  margin-right: 0.75rem !important;
+}
+
+/* Remove pin/unpin styles */
+.g-sidenav-pinned .sidenav,
+.g-sidenav-hidden .sidenav,
+.g-sidenav-show .sidenav {
+  transform: translateX(0) !important;
+  width: 250px !important;
+}
+
+.g-sidenav-pinned .main-content,
+.g-sidenav-hidden .main-content,
+.g-sidenav-show .main-content {
+  margin-left: 250px !important;
+}
+
+/* Desktop - Always show sidebar */
+@media (min-width: 769px) {
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+  
+  .mobile-overlay {
+    display: none !important;
+  }
+}
+
+/* Mobile responsive - hide sidebar by default */
+@media (max-width: 768px) {
+  .sidenav {
+    transform: translateX(-250px) !important;
+    position: fixed !important;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Show mobile menu button */
+  .mobile-menu-toggle {
+    display: block !important;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1060;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .sidenav.mobile-show {
+    transform: translateX(0) !important;
+  }
+  
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1049;
+  }
+  
+  .mobile-overlay.show {
+    display: block;
+  }
+}
+
+/* Remove collapse animations */
+.navbar-collapse {
+  display: block !important;
+}
+
+.collapsing {
+  transition: none !important;
+  display: block !important;
+  height: auto !important;
+}
+
+/* Ensure scrollbar on sidebar if content overflows */
+.sidenav .scrollbar-inner {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for sidebar */
+.sidenav .scrollbar-inner::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidenav .scrollbar-inner::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidenav .scrollbar-inner::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.sidenav .scrollbar-inner::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Force override all Argon sidebar hover states */
+.sidenav,
+.sidenav:hover,
+.sidenav:focus,
+body .sidenav,
+body .sidenav:hover,
+body.g-sidenav-show .sidenav,
+body.g-sidenav-hidden .sidenav,
+body.g-sidenav-pinned .sidenav,
+body:not(.g-sidenav-pinned) .sidenav,
+body:not(.g-sidenav-pinned) .sidenav:hover,
+body:not(.g-sidenav-show) .sidenav:hover {
+  width: 250px !important;
+  min-width: 250px !important;
+  max-width: 250px !important;
+  transform: translateX(0) !important;
+  left: 0 !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+/* Disable all animations and transitions globally on sidebar */
+.sidenav * {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Override nav-link hover to be instant */
+.sidenav .navbar-nav .nav-link {
+  transition: none !important;
+}
+
+.sidenav .navbar-nav .nav-link:hover {
+  transition: none !important;
+  transform: none !important;
+}
+
+/* Force body to always be in pinned state */
+body {
+  overflow-x: hidden;
+}
+
+body.g-sidenav-pinned .main-content {
+  margin-left: 250px !important;
+}
+
+/* Disable pointer events on sidenav brand area */
+.sidenav-header {
+  pointer-events: none;
+}
+
+.sidenav-header a {
+  pointer-events: auto;
+}

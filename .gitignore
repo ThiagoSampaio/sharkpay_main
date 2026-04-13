@@ -1,0 +1,16 @@
+.venv/
+node_modules/
+vendor/
+
+# IDE and OS files
+.vscode/
+Thumbs.db
+Desktop.ini
+
+# Environment files
+.env
+core/.env
+
+# Logs and caches
+*.log
+*.cache
