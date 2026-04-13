@@ -1,35 +1,55 @@
 @extends('layout')
 @section('css')
 <style>
+    :root {
+        --sharkpay-purple: #7b16f4;
+        --sharkpay-purple-dark: #5d0fd3;
+        --sharkpay-purple-soft: #f5eeff;
+        --sharkpay-orange: #f58a00;
+        --sharkpay-orange-soft: #fff4e6;
+        --sharkpay-ink: #1d2542;
+        --sharkpay-slate: #667085;
+        --sharkpay-border: #e8e8f2;
+        --sharkpay-surface: #ffffff;
+        --sharkpay-surface-soft: #f7f8fc;
+    }
+
     .home-hero {
-        background: linear-gradient(135deg, #f7f8fc 0%, #eef4ff 55%, #fff8ef 100%);
+        background:
+            linear-gradient(135deg, rgba(123, 22, 244, 0.16), rgba(245, 138, 0, 0.08)),
+            linear-gradient(160deg, #161d37 0%, #202a4d 58%, #12192d 100%);
         overflow: hidden;
         position: relative;
+    }
+
+    .home-hero .container {
+        z-index: 1;
     }
 
     .home-hero::before,
     .home-hero::after {
         content: '';
         position: absolute;
-        border-radius: 999px;
-        opacity: 0.55;
         pointer-events: none;
     }
 
     .home-hero::before {
-        width: 420px;
-        height: 420px;
-        background: radial-gradient(circle, rgba(255, 167, 38, 0.18) 0%, rgba(255, 167, 38, 0) 72%);
-        top: -140px;
-        right: -120px;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 48px 48px;
+        opacity: 0.32;
     }
 
     .home-hero::after {
-        width: 360px;
-        height: 360px;
-        background: radial-gradient(circle, rgba(49, 130, 246, 0.18) 0%, rgba(49, 130, 246, 0) 72%);
-        left: -120px;
-        bottom: -140px;
+        width: 520px;
+        height: 520px;
+        right: -140px;
+        top: -180px;
+        border-radius: 50%;
+        opacity: 0.7;
+        background: radial-gradient(circle, rgba(123, 22, 244, 0.26) 0%, rgba(123, 22, 244, 0) 72%);
     }
 
     .home-hero-card,
@@ -38,13 +58,17 @@
     .home-stat-card,
     .home-cta-card,
     .home-review-card {
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 18px 50px rgba(20, 32, 67, 0.08);
+        background: var(--sharkpay-surface);
+        border: 1px solid rgba(123, 22, 244, 0.08);
+        border-radius: 22px;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
     }
 
     .home-hero-card {
         padding: 28px;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(10px);
     }
 
     .home-stat-card,
@@ -60,7 +84,9 @@
 
     .home-cta-card {
         padding: 40px;
-        background: linear-gradient(135deg, #101828 0%, #1f2a44 100%);
+        background:
+            radial-gradient(circle at top right, rgba(245, 138, 0, 0.24), transparent 30%),
+            linear-gradient(135deg, var(--sharkpay-purple-dark) 0%, #34206f 55%, #1a213b 100%);
         color: #fff;
     }
 
@@ -70,39 +96,46 @@
         gap: 10px;
         padding: 8px 16px;
         border-radius: 999px;
-        background: rgba(16, 24, 40, 0.06);
-        color: #172033;
-        font-weight: 600;
+        background: var(--sharkpay-purple-soft);
+        color: var(--sharkpay-purple-dark);
+        font-weight: 700;
         font-size: 13px;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
     }
 
     .home-display {
         font-size: 54px;
         line-height: 1.05;
-        font-weight: 700;
-        color: #141f34;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.04em;
     }
 
     .home-copy,
     .home-review-copy,
     .home-panel-copy {
-        color: #556070;
+        color: var(--sharkpay-slate);
         font-size: 18px;
         line-height: 1.8;
+    }
+
+    .home-hero .home-copy {
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 560px;
     }
 
     .home-metric {
         padding: 18px 20px;
         border-radius: 16px;
-        background: #f8fafc;
-        border: 1px solid rgba(20, 32, 67, 0.06);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(8px);
     }
 
     .home-metric-value {
         display: block;
-        color: #141f34;
+        color: #fff;
         font-size: 28px;
         font-weight: 700;
         line-height: 1;
@@ -111,8 +144,13 @@
 
     .home-metric-label,
     .home-stat-label {
-        color: #667085;
+        color: var(--sharkpay-slate);
         font-size: 14px;
+    }
+
+    .home-hero .home-metric-label,
+    .home-hero-card .home-stat-label {
+        color: rgba(255, 255, 255, 0.72);
     }
 
     .home-feature-icon,
@@ -123,10 +161,11 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #233876 0%, #0f9bd7 100%);
+        background: linear-gradient(135deg, var(--sharkpay-purple-dark) 0%, var(--sharkpay-purple) 60%, var(--sharkpay-orange) 100%);
         color: #fff;
         font-size: 24px;
         margin-bottom: 18px;
+        box-shadow: 0 16px 30px rgba(123, 22, 244, 0.22);
     }
 
     .home-feature-card h5,
@@ -134,8 +173,37 @@
     .home-review-card h5,
     .home-panel h3,
     .home-cta-card h3 {
-        color: #141f34;
+        color: var(--sharkpay-ink);
         font-weight: 700;
+    }
+
+    .home-feature-card,
+    .home-panel,
+    .home-review-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .home-feature-card::before,
+    .home-panel::before,
+    .home-review-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--sharkpay-purple-dark) 0%, var(--sharkpay-purple) 65%, var(--sharkpay-orange) 100%);
+    }
+
+    .home-stat-card {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: none;
+    }
+
+    .home-stat-card h5 {
+        color: #fff;
     }
 
     .home-cta-card h3,
@@ -152,8 +220,9 @@
 
     .home-logo-strip {
         padding: 18px 22px;
-        border-radius: 18px;
-        background: #fff;
+        border-radius: 20px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfaff 100%);
+        border: 1px solid rgba(123, 22, 244, 0.08);
         box-shadow: 0 14px 40px rgba(20, 32, 67, 0.06);
     }
 
@@ -161,8 +230,8 @@
         max-height: 42px;
         width: auto !important;
         margin: 0 auto;
-        filter: grayscale(1);
-        opacity: 0.8;
+        filter: grayscale(0.35);
+        opacity: 0.92;
     }
 
     .home-review-card {
@@ -172,7 +241,7 @@
     .home-review-mark {
         font-size: 58px;
         line-height: 1;
-        color: rgba(35, 56, 118, 0.14);
+        color: rgba(123, 22, 244, 0.16);
         display: block;
         margin-bottom: 12px;
     }
@@ -189,8 +258,28 @@
         z-index: 1;
     }
 
+    .home-image-stack::after {
+        content: '';
+        position: absolute;
+        inset: auto 8% -18px 8%;
+        height: 26px;
+        background: radial-gradient(circle, rgba(245, 138, 0, 0.35) 0%, rgba(245, 138, 0, 0) 72%);
+        filter: blur(10px);
+        z-index: -1;
+    }
+
     .home-image-stack img {
         width: 100%;
+    }
+
+    .home-section-soft {
+        background: linear-gradient(180deg, #f7f8fc 0%, #fdfbff 100%);
+    }
+
+    .home-enterprise-note {
+        color: rgba(255, 255, 255, 0.64);
+        font-size: 14px;
+        letter-spacing: 0.02em;
     }
 
     @media (max-width: 991px) {
@@ -261,6 +350,7 @@
                         </div>
                     </div>
                 </div>
+                <p class="home-enterprise-note m-15px-t m-0px-b">Paleta alinhada com a identidade SharkPay do painel e da logo atual.</p>
             </div>
             <div class="col-lg-5 m-15px-tb">
                 <div class="home-hero-card">
@@ -359,7 +449,7 @@
     </div>
 </section>
 
-<section class="section effect-section p-70px-tb gray-bg">
+<section class="section effect-section p-70px-tb home-section-soft">
     <div class="container">
         <div class="row justify-content-center m-40px-b">
             <div class="col-lg-8 text-center">
