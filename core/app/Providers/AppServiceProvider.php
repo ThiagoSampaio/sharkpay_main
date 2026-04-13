@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
@@ -52,6 +53,60 @@ use Stripe\Charge;
 
 class AppServiceProvider extends ServiceProvider
 {
+    private function shareFallbackViewData($view = null)
+    {
+        $fallback = [
+            'adminbank' => null,
+            'pticket' => collect(),
+            'pwithdraw' => collect(),
+            'pdeposit' => collect(),
+            'pbank' => collect(),
+            'stripe' => null,
+            'btc' => null,
+            'eth' => null,
+            'paypal' => null,
+            'flutter' => null,
+            'paystack' => null,
+            'currency' => null,
+            'set' => null,
+            'admin' => null,
+            'p_transfer' => collect(),
+            'p_request' => collect(),
+            'user' => null,
+            'ver' => null,
+            'history' => collect(),
+            'cast' => 'person.png',
+            'xvcard' => collect(),
+            'blog' => collect(),
+            'logo' => null,
+            'social' => collect(),
+            'faq' => collect(),
+            'cat' => collect(),
+            'pages' => collect(),
+            'ui' => null,
+            'about' => null,
+            'trending' => collect(),
+            'posts' => collect(),
+            'review' => collect(),
+            'item' => collect(),
+            'item4' => null,
+            'brand' => collect(),
+            'branch' => collect(),
+            'xfaq' => null,
+            'livechatCode' => '',
+        ];
+
+        if ($view !== null) {
+            foreach ($fallback as $key => $value) {
+                $view->with($key, $value);
+            }
+
+            return;
+        }
+
+        View::share($fallback);
+    }
+
     private function sanitizeLivechat($livechat)
     {
         if (!is_string($livechat) || $livechat === '') {
@@ -93,58 +148,64 @@ class AppServiceProvider extends ServiceProvider
         }
 
         View::composer('*', function($view){
-            $currency=Currency::whereStatus(1)->first();
-            $set=Settings::first();
+            try {
+                $currency=Currency::whereStatus(1)->first();
+                $set=Settings::first();
 
-            if($set->next_settlement<Carbon::now()){
-                $dt = Carbon::now();
-                $dt->add($set->duration.' '.$set->period); 
-                $set->next_settlement=$dt;
-                $set->save();  
-            }            
-            //Update settlement date of pending settlement
-            $pcheck=Withdraw::wherestatus(0)->where('next_settlement', '<', $set->next_settlement)->get();
-            foreach($pcheck as $xcheck){
-                $xcheck->next_settlement=$set->next_settlement;
-                $xcheck->save();
-            }
-            $stripe=Gateway::whereid(103)->first();
-            $flutter=Gateway::whereid(108)->first();
-            $checkout=Gateway::whereid(508)->first();
-            $btc=Gateway::whereid(505)->first();
-            $eth=Gateway::whereid(506)->first();
-            $paypal=Gateway::whereid(101)->first();
-            $paystack=Gateway::whereid(107)->first();
-            $flutter=Gateway::whereid(108)->first();
-            $sub=Subscribers::wherestatus(1)->where('times', '>', 0)->where('expiring_date', '<', Carbon::now())->get();
-            $transfer=Transfer::where('temp', '!=', null )->wherestatus(0)->get();
-            if (Auth::guard('admin')->check()) {
-                $admin=Admin::find(Auth::guard('admin')->user()->id);
-                $view->with('admin', $admin );
-            }
-            if (Auth::guard('user')->check()) {
-                $user=User::find(Auth::guard('user')->user()->id);
-                $xvcard=Virtual::whereUser_id($user->id)->orderBy('id', 'DESC')->get();
-                $ver=Compliance::whereuser_id(Auth::guard('user')->user()->id)->first();
-                if($user->image==null){
-                    $cast="person.png";
-                }else{
-                    $cast=$user->image;
-                }         
-                $p_transfer=Transfer::where('Temp', Auth::guard('user')->user()->email)->where('status',0)->get();
-                $p_request=Requests::where('email', Auth::guard('user')->user()->email)->wherestatus(0)->get();
-                $xhistory=History::whereuser_id(Auth::guard('user')->user()->id)->wheretype(1)->where('amount','!=',null)->get();
+                if ($set === null) {
+                    $this->shareFallbackViewData($view);
+                    return;
+                }
+
+                if($set->next_settlement<Carbon::now()){
+                    $dt = Carbon::now();
+                    $dt->add($set->duration.' '.$set->period); 
+                    $set->next_settlement=$dt;
+                    $set->save();  
+                }            
+                //Update settlement date of pending settlement
+                $pcheck=Withdraw::wherestatus(0)->where('next_settlement', '<', $set->next_settlement)->get();
+                foreach($pcheck as $xcheck){
+                    $xcheck->next_settlement=$set->next_settlement;
+                    $xcheck->save();
+                }
+                $stripe=Gateway::whereid(103)->first();
+                $flutter=Gateway::whereid(108)->first();
+                $checkout=Gateway::whereid(508)->first();
+                $btc=Gateway::whereid(505)->first();
+                $eth=Gateway::whereid(506)->first();
+                $paypal=Gateway::whereid(101)->first();
+                $paystack=Gateway::whereid(107)->first();
+                $flutter=Gateway::whereid(108)->first();
+                $sub=Subscribers::wherestatus(1)->where('times', '>', 0)->where('expiring_date', '<', Carbon::now())->get();
+                $transfer=Transfer::where('temp', '!=', null )->wherestatus(0)->get();
+                if (Auth::guard('admin')->check()) {
+                    $admin=Admin::find(Auth::guard('admin')->user()->id);
+                    $view->with('admin', $admin );
+                }
+                if (Auth::guard('user')->check()) {
+                    $user=User::find(Auth::guard('user')->user()->id);
+                    $xvcard=Virtual::whereUser_id($user->id)->orderBy('id', 'DESC')->get();
+                    $ver=Compliance::whereuser_id(Auth::guard('user')->user()->id)->first();
+                    if($user->image==null){
+                        $cast="person.png";
+                    }else{
+                        $cast=$user->image;
+                    }         
+                    $p_transfer=Transfer::where('Temp', Auth::guard('user')->user()->email)->where('status',0)->get();
+                    $p_request=Requests::where('email', Auth::guard('user')->user()->email)->wherestatus(0)->get();
+                    $xhistory=History::whereuser_id(Auth::guard('user')->user()->id)->wheretype(1)->where('amount','!=',null)->get();
                 
 
                   
-                $view->with('p_transfer', $p_transfer);
-                $view->with('p_request', $p_request);
-                $view->with('user', $user);
-                $view->with('ver', $ver);
-                $view->with('history', $xhistory);
-                $view->with('cast', $cast);
-                $view->with('xvcard', $xvcard);
-            }
+                    $view->with('p_transfer', $p_transfer);
+                    $view->with('p_request', $p_request);
+                    $view->with('user', $user);
+                    $view->with('ver', $ver);
+                    $view->with('history', $xhistory);
+                    $view->with('cast', $cast);
+                    $view->with('xvcard', $xvcard);
+                }
             /*
             if(url()->current()!=route('ipn.boompay')){
                 //sub_check();
@@ -152,22 +213,22 @@ class AppServiceProvider extends ServiceProvider
             */
 			
             //Failed Transfer Claim
-            foreach($transfer as $val){
-                $set=Settings::first();
-                $date1=Carbon::now();
-                $date2=Carbon::parse($val->created_at);
-                $check=$date1->diffInDays($date2);
-                if($check==5 || $check>5){
-                    $sender=User::whereid($val->sender_id)->first();
-                    $sender->balance=$val->amount+$sender->balance;
-                    $sender->save();
-                    $val->status=2;
-                    $val->save();
-                    if($set->email_notify==1){
-                        send_transferrefund($sender->ref_id);
-                    } 
-                }
-            }  
+                foreach($transfer as $val){
+                    $set=Settings::first();
+                    $date1=Carbon::now();
+                    $date2=Carbon::parse($val->created_at);
+                    $check=$date1->diffInDays($date2);
+                    if($check==5 || $check>5){
+                        $sender=User::whereid($val->sender_id)->first();
+                        $sender->balance=$val->amount+$sender->balance;
+                        $sender->save();
+                        $val->status=2;
+                        $val->save();
+                        if($set->email_notify==1){
+                            send_transferrefund($sender->ref_id);
+                        } 
+                    }
+                }  
             
             //Subscription Management
                 foreach($sub as $val){
@@ -215,46 +276,60 @@ class AppServiceProvider extends ServiceProvider
                         } 
                     }
                 }
-            //
-            $pticket=Ticket::where('status', 0)->get();
-            $pdeposit=Deposits::where('status', 0)->get();
-            $pbank=Banktransfer::where('status', 0)->get();
-            $pwithdraw=Withdraw::where('status', 0)->get();
-            $adminbank=Adminbank::whereId(1)->first();
-            $view->with('adminbank', $adminbank);
-            $view->with('pticket', $pticket);
-            $view->with('pwithdraw', $pwithdraw);
-            $view->with('pdeposit', $pdeposit);
-            $view->with('pbank', $pbank);
-            $view->with('stripe', $stripe);
-            $view->with('btc', $btc);
-            $view->with('eth', $eth);
-            $view->with('paypal', $paypal);
-            $view->with('flutter', $flutter);
-            $view->with('paystack', $paystack);
-            $view->with('currency', $currency);
-            $view->with('set', $set);
-        });
-        $data['set']=Settings::first();
-        $data['blog']=Blog::whereStatus(1)->get();
-        $data['logo']=Logo::first();
-        $data['social']=Social::all();
-        $data['faq']=Faq::all();
-        $data['cat']=Category::all();
-        $data['pages']=Page::whereStatus(1)->get();
-        $data['ui']=Design::first();
-        $data['about']=About::first();
-        $data['trending'] = Blog::whereStatus(1)->orderBy('views', 'DESC')->limit(5)->get();
-        $data['posts'] = Blog::whereStatus(1)->orderBy('views', 'DESC')->limit(5)->get();
-        $data['review'] = Review::whereStatus(1)->get();
-        $data['item'] = Services::all();
-        $data['item4'] = Services::whereId(4)->first();
-        $data['brand'] = Brands::whereStatus(1)->get();
-        $data['branch'] = Branch::all();
-        $data['xfaq']=Faq::first();
-        $data['livechatCode'] = '';
+                //
+                $pticket=Ticket::where('status', 0)->get();
+                $pdeposit=Deposits::where('status', 0)->get();
+                $pbank=Banktransfer::where('status', 0)->get();
+                $pwithdraw=Withdraw::where('status', 0)->get();
+                $adminbank=Adminbank::whereId(1)->first();
+                $view->with('adminbank', $adminbank);
+                $view->with('pticket', $pticket);
+                $view->with('pwithdraw', $pwithdraw);
+                $view->with('pdeposit', $pdeposit);
+                $view->with('pbank', $pbank);
+                $view->with('stripe', $stripe);
+                $view->with('btc', $btc);
+                $view->with('eth', $eth);
+                $view->with('paypal', $paypal);
+                $view->with('flutter', $flutter);
+                $view->with('paystack', $paystack);
+                $view->with('currency', $currency);
+                $view->with('set', $set);
+            } catch (\Throwable $exception) {
+                Log::error('AppServiceProvider view composer failed.', [
+                    'message' => $exception->getMessage(),
+                ]);
 
-        
-        view::share($data);
+                $this->shareFallbackViewData($view);
+            }
+        });
+        try {
+            $data['set']=Settings::first();
+            $data['blog']=Blog::whereStatus(1)->get();
+            $data['logo']=Logo::first();
+            $data['social']=Social::all();
+            $data['faq']=Faq::all();
+            $data['cat']=Category::all();
+            $data['pages']=Page::whereStatus(1)->get();
+            $data['ui']=Design::first();
+            $data['about']=About::first();
+            $data['trending'] = Blog::whereStatus(1)->orderBy('views', 'DESC')->limit(5)->get();
+            $data['posts'] = Blog::whereStatus(1)->orderBy('views', 'DESC')->limit(5)->get();
+            $data['review'] = Review::whereStatus(1)->get();
+            $data['item'] = Services::all();
+            $data['item4'] = Services::whereId(4)->first();
+            $data['brand'] = Brands::whereStatus(1)->get();
+            $data['branch'] = Branch::all();
+            $data['xfaq']=Faq::first();
+            $data['livechatCode'] = '';
+
+            view::share($data);
+        } catch (\Throwable $exception) {
+            Log::error('AppServiceProvider shared view bootstrap failed.', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            $this->shareFallbackViewData();
+        }
     }
 }
