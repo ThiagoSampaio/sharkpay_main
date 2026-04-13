@@ -27,13 +27,181 @@
 
 
         <style>
+            :root {
+                --sharkpay-purple: #7b16f4;
+                --sharkpay-purple-dark: #5d0fd3;
+                --sharkpay-purple-soft: #f5eeff;
+                --sharkpay-orange: #f58a00;
+                --sharkpay-ink: #1d2542;
+                --sharkpay-slate: #667085;
+                --sharkpay-border: #e8e8f2;
+                --sharkpay-surface: #ffffff;
+                --sharkpay-surface-soft: #f7f8fc;
+                --sharkpay-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+            }
+
             .custom-spinner-loader {
-                border: 16px solid #f3f3f3; /* Light grey */
-                border-top: 16px solid #3498db; /* Blue */
+                border: 16px solid #f3f3f3;
+                border-top: 16px solid #3498db;
                 border-radius: 50%;
                 width: 120px;
                 height: 120px;
                 animation: spin 2s linear infinite;
+            }
+
+            body.public-site {
+                background: linear-gradient(180deg, #f6f7fc 0%, #ffffff 100%);
+                color: var(--sharkpay-ink);
+            }
+
+            .public-header .fixed-header-bar {
+                padding-top: 18px;
+            }
+
+            .public-header .navbar-main {
+                padding: 14px 18px;
+                background: rgba(255, 255, 255, 0.9);
+                border: 1px solid rgba(123, 22, 244, 0.08);
+                border-radius: 24px;
+                backdrop-filter: blur(12px);
+                box-shadow: var(--sharkpay-shadow);
+            }
+
+            .public-header .navbar-brand img {
+                max-width: 220px !important;
+            }
+
+            .public-header .nav-link {
+                color: var(--sharkpay-ink) !important;
+                font-weight: 600;
+            }
+
+            .public-header .nav-link:hover,
+            .public-header .nav-link:focus {
+                color: var(--sharkpay-purple-dark) !important;
+            }
+
+            .public-header .px-dropdown-menu {
+                border: 1px solid rgba(123, 22, 244, 0.1);
+                border-radius: 18px;
+                box-shadow: var(--sharkpay-shadow);
+                overflow: hidden;
+            }
+
+            .public-nav-actions {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
+                margin-left: 20px;
+            }
+
+            .public-action-link {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 44px;
+                padding: 0 18px;
+                border-radius: 999px;
+                font-size: 14px;
+                font-weight: 700;
+                transition: .25s ease;
+            }
+
+            .public-action-link--ghost {
+                color: var(--sharkpay-purple-dark);
+                background: var(--sharkpay-purple-soft);
+            }
+
+            .public-action-link--ghost:hover {
+                color: var(--sharkpay-purple-dark);
+                background: #ede2ff;
+            }
+
+            .public-action-link--primary {
+                color: #fff;
+                background: linear-gradient(135deg, var(--sharkpay-purple-dark) 0%, var(--sharkpay-purple) 60%, var(--sharkpay-orange) 100%);
+                box-shadow: 0 14px 28px rgba(123, 22, 244, 0.18);
+            }
+
+            .public-action-link--primary:hover {
+                color: #fff;
+                transform: translateY(-1px);
+            }
+
+            .public-main {
+                min-height: calc(100vh - 220px);
+            }
+
+            .public-footer {
+                margin-top: 40px;
+                background:
+                    radial-gradient(circle at top right, rgba(245, 138, 0, 0.16), transparent 22%),
+                    linear-gradient(145deg, #141c34 0%, #1d2542 58%, #101727 100%);
+                color: rgba(255, 255, 255, 0.82);
+            }
+
+            .public-footer .footer-top {
+                padding-top: 20px;
+            }
+
+            .public-footer .footer-title,
+            .public-footer h4,
+            .public-footer h5 {
+                color: #fff;
+                font-weight: 700;
+            }
+
+            .public-footer p,
+            .public-footer li,
+            .public-footer a {
+                color: rgba(255, 255, 255, 0.74);
+            }
+
+            .public-footer a:hover {
+                color: #fff;
+            }
+
+            .public-footer-brand {
+                max-width: 360px;
+            }
+
+            .public-footer-copy {
+                margin-top: 18px;
+                font-size: 15px;
+                line-height: 1.8;
+            }
+
+            .public-footer-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 14px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.08);
+                color: #fff;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .public-footer .social-icon a {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .public-footer .footer-bottom {
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                margin-top: 12px;
+                padding-top: 24px;
+                padding-bottom: 24px;
             }
 
             @keyframes spin {
@@ -41,11 +209,21 @@
                 100% { transform: rotate(360deg); }
             }
 
+            @media (max-width: 991px) {
+                .public-header .navbar-main {
+                    padding: 12px 14px;
+                }
+
+                .public-nav-actions {
+                    margin-left: 0;
+                    margin-top: 14px;
+                }
+            }
         </style>
          @yield('css')
     </head>
 
-    <body data-spy="scroll" data-target="#navbar-collapse-toggle" data-offset="98">
+    <body class="public-site" data-spy="scroll" data-target="#navbar-collapse-toggle" data-offset="98">
     <!-- Preload -->
     <!--
     <div id="loading">
@@ -54,7 +232,7 @@
     -->
     <!-- End Preload -->
     <!-- Header -->
-    <header class="header-nav header-dark">
+    <header class="header-nav header-dark public-header">
         <div class="fixed-header-bar">
             <!-- Header Nav -->
             <div class="navbar navbar-main navbar-expand-lg">
@@ -117,6 +295,14 @@
                                 <a class="nav-link" href="{{route('blog')}}">{{$lang["layout_blog"]}}</a>
                             </li>                           
                         </ul>
+                        <div class="public-nav-actions">
+                            @if (Auth::guard('user')->check())
+                                <a class="public-action-link public-action-link--primary" href="{{route('user.dashboard')}}">{{$lang['front_dashboard']}}</a>
+                            @else
+                                <a class="public-action-link public-action-link--ghost" href="{{route('login')}}">{{$lang['front_sign_in']}}</a>
+                                <a class="public-action-link public-action-link--primary" href="{{route('register')}}">{{$lang['front_get_started']}}</a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,19 +311,20 @@
     </header>
     <!-- Header End -->
     <!-- Main -->
-    <main>
+    <main class="public-main">
 @yield('content')
-    <footer class="footer effect-section p-60px-t">
+    <footer class="footer effect-section p-60px-t public-footer">
         <div class="footer-top">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-6 m-15px-tb">
                         <div class="row">
                             <div class="col-lg-6">
+                                <span class="public-footer-badge">infraestrutura comercial digital</span>
                                 <div class="p-25px-b">
                                     <img class="logo-dark nav-img" alt="" title="" src="{{url('/')}}/asset/{{$logo->image_link}}">
                                 </div>
-                                <p>
+                                <p class="public-footer-copy">
                                     {{$set->site_desc}}
                                 </p>
                                 <div class="social-icon si-30 theme round nav">

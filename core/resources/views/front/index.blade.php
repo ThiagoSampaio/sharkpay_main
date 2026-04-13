@@ -530,7 +530,7 @@
                             <span>avaliacoes publicas</span>
                         </div>
                     </div>
-                    <p class="home-meta m-20px-t m-0px-b">Estrutura visual repensada para apresentar produto, operacao e confianca com linguagem mais enterprise.</p>
+                    <p class="home-meta m-20px-t m-0px-b">Infraestrutura comercial apresentada com mais clareza, credibilidade e senso de produto para operacoes digitais em escala.</p>
                 </div>
                 <div class="col-lg-5 m-15px-tb">
                     <div class="home-command">
@@ -541,24 +541,24 @@
                             </div>
                             <div class="home-command__hero">
                                 <h4>{{$set->site_name}}</h4>
-                                <p>Recebimento, cobranca, loja e relacionamento organizados em um fluxo claro para empresas que precisam operar com consistencia.</p>
+                                <p>Recebimento, cobranca, loja e relacionamento organizados como plataforma, com leitura executiva e narrativa mais madura para negocios digitais.</p>
                             </div>
                             <div class="home-command__grid">
                                 <div class="home-command__metric">
                                     <strong>{{$serviceCount}}</strong>
-                                    <span>frentes comerciais conectadas</span>
+                                    <span>frentes de receita conectadas</span>
                                 </div>
                                 <div class="home-command__metric">
                                     <strong>{{$brandCount}}</strong>
-                                    <span>ativos de credibilidade expostos</span>
+                                    <span>camadas de confianca visiveis</span>
                                 </div>
                                 <div class="home-command__item">
                                     <h5>{{$lang['front_payment_pages']}}</h5>
-                                    <p>Links e paginas de cobranca com entrada rapida e leitura objetiva.</p>
+                                    <p>Paginas de cobranca desenhadas para reduzir friccao e acelerar entendimento.</p>
                                 </div>
                                 <div class="home-command__item">
                                     <h5>{{$lang['front_storefront']}}</h5>
-                                    <p>Catalogo, pedidos e recebimento dentro do mesmo ecossistema.</p>
+                                    <p>Catalogo, pedidos e recebimento conectados em uma experiencia comercial unica.</p>
                                 </div>
                             </div>
                         </div>
@@ -574,8 +574,8 @@
             <div class="home-trust-strip">
                 <div class="home-trust-strip__header">
                     <div>
-                        <h4>Ecossistema visualmente confiavel</h4>
-                        <p>Parceiros, marcas e integracoes exibidos como camada de credibilidade logo no inicio da jornada.</p>
+                        <h4>Credibilidade apresentada desde o primeiro scroll</h4>
+                        <p>Marcas, parceiros e integracoes aparecem cedo na narrativa para reforcar robustez e legitimidade.</p>
                     </div>
                     <span class="home-pill">brand proof</span>
                 </div>
@@ -607,11 +607,11 @@
                         <div class="home-pillars">
                             <div class="home-pillar">
                                 <strong>Entrada</strong>
-                                <span>Capte clientes e pedidos sem depender de varias telas para explicar a proposta.</span>
+                                <span>Capte demanda com uma proposta visivelmente mais clara, direta e institucional.</span>
                             </div>
                             <div class="home-pillar">
                                 <strong>Controle</strong>
-                                <span>Organize cobranca, visual comercial e operacao em uma narrativa mais objetiva.</span>
+                                <span>Organize cobranca, posicionamento e operacao em uma estrutura mais executiva.</span>
                             </div>
                             <div class="home-pillar">
                                 <strong>Escala</strong>
@@ -629,8 +629,8 @@
             <div class="row justify-content-center m-40px-b">
                 <div class="col-lg-8 text-center">
                     <span class="home-pill m-20px-b">{{$ui->s1_title}}</span>
-                    <h2 class="home-title m-20px-b">Layout orientado por capacidades do produto</h2>
-                    <p class="home-copy m-0px">Em vez de blocos genéricos, a nova home enfatiza modulos operacionais, clareza comercial e contexto de uso real.</p>
+                    <h2 class="home-title m-20px-b">Arquitetura visual orientada por capacidades reais</h2>
+                    <p class="home-copy m-0px">A home agora prioriza modulos que explicam operacao, monetizacao e confianca sem parecer uma landing page genérica.</p>
                 </div>
             </div>
             <div class="row">
@@ -663,12 +663,12 @@
                     <div class="home-rail-card m-15px-b">
                         <div class="home-rail-icon"><i class="fal fa-random"></i></div>
                         <h5 class="m-10px-b">{{$lang['front_transfer_request_money']}}</h5>
-                        <p>Solicitacoes e transferencias apresentadas como fluxo operacional, nao como recurso isolado.</p>
+                        <p>Transferencias e solicitacoes posicionadas como fluxo central de operacao, nao como recurso paralelo.</p>
                     </div>
                     <div class="home-rail-card">
                         <div class="home-rail-icon"><i class="fal fa-money-bill-wave-alt"></i></div>
                         <h5 class="m-10px-b">{{$lang['front_bill_payment']}}</h5>
-                        <p>Recebimento com linguagem clara para reduzir friccao entre cobranca, entendimento e pagamento.</p>
+                        <p>Recebimento com narrativa mais clara para aproximar cobranca, contexto comercial e conversao.</p>
                     </div>
                 </div>
                 <div class="col-lg-4 m-15px-tb">
@@ -680,12 +680,12 @@
                     <div class="home-rail-card m-15px-b">
                         <div class="home-rail-icon"><i class="fal fa-envelope"></i></div>
                         <h5 class="m-10px-b">{{$lang['front_invoice_payment']}}</h5>
-                        <p>Cobrancas enviadas com leitura mais empresarial, fortalecendo contexto e confianca da operacao.</p>
+                        <p>Faturas com leitura mais empresarial, reforcando contexto, legitimidade e previsibilidade.</p>
                     </div>
                     <div class="home-rail-card">
                         <div class="home-rail-icon"><i class="fal fa-credit-card-front"></i></div>
                         <h5 class="m-10px-b">{{$lang['front_virtual_cards']}}</h5>
-                        <p>Recursos complementares apresentados como extensao natural da plataforma, e nao como apendice.</p>
+                        <p>Recursos complementares apresentados como extensao natural da plataforma, com menos dispersao visual.</p>
                     </div>
                 </div>
             </div>
@@ -730,7 +730,7 @@
             <div class="home-cta-card text-center">
                 <span class="home-pill m-20px-b">reposicionamento da home</span>
                 <h3 class="home-title m-20px-b">{{$lang['front_join_millions_who_choose']}} {{$set->site_name}} {{$lang['front_worldwide']}}</h3>
-                <p class="home-copy m-0px">A nova arquitetura visual organiza melhor produto, operacao e confianca. Se quiser, o proximo passo pode ser refinar a copy para um tom ainda mais premium e B2B.</p>
+                <p class="home-copy m-0px">Produto, operacao e credibilidade agora aparecem de forma mais consistente. Se quiser, o proximo passo pode ser especializar a copy para um segmento especifico do seu mercado.</p>
                 <div class="home-cta-actions">
                     <a class="m-btn m-btn-radius m-btn-t-dark" href="{{route('register')}}">
                         <span class="m-btn-inner-text">{{$lang['front_sign_up_for_free']}}</span>
